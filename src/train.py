@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 
 def init_params():
     W1 = np.random.randn(64, 784) * np.sqrt(2 / 784)
@@ -93,7 +94,33 @@ def get_accuracy(predictions, Y):
     print(predictions, Y)
     return np.sum(predictions == Y) / Y.size
 
-def gradient_descent(X, Y, alpha, iterations):
+def save_model(W1, b1, W2, b2, W3, b3, path):
+    model = {
+        "W1": W1,
+        "b1": b1,
+        "W2": W2,
+        "b2": b2,
+        "W3": W3,
+        "b3": b3
+    }
+    with open(path, "wb") as f:
+        pickle.dump(model, f)
+
+def load_train_data():
+    data = pd.read_csv("data/train.csv")
+    data = np.array(data)
+    np.random.shuffle(data)
+
+    m, n = data.shape
+
+    data_train = data[1000:m].T
+
+    Y_train = data_train[0]
+    X_train = data_train[1:n] / 255.0
+
+    return X_train, Y_train
+
+def train(X, Y, alpha, iterations):
 
     W1, b1, W2, b2, W3, b3 = init_params()
 
@@ -122,3 +149,15 @@ def gradient_descent(X, Y, alpha, iterations):
             print(i, get_accuracy(predictions, Y))
 
     return W1, b1, W2, b2, W3, b3
+
+def main():
+    X_train, Y_train = load_train_data()
+    W1, b1, W2, b2, W3, b3 = train(X_train, Y_train, 0.10, 500)
+    print("Model trained!")
+
+    path = "data/model.pickle"
+    save_model(W1, b1, W2, b2, W3, b3, path)
+    print(f"Model saved at: {path}")
+
+if __name__ == "__main__":
+    main()
