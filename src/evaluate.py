@@ -26,6 +26,7 @@ def test_prediction(index, W1, b1, W2, b2, W3, b3, X):
 
     plt.gray()
     plt.imshow(image, interpolation="nearest")
+    plt.title(f"Prediction: {prediction[0]}")
     plt.show()
 
 def load_test_data():
@@ -58,15 +59,28 @@ def main():
     W1, b1, W2, b2, W3, b3 = load_model(path)
 
     X_test = load_test_data()
-    index = np.random.randint(0, X_test.shape[1])
+    # times = int(input("Enter how many predictions you want to see: "))
+    times = 5
 
-    test_prediction(
-        index,
-        W1, b1,
-        W2, b2,
-        W3, b3,
-        X_test
-    )
+    indexes = []
+
+    for i in range(times):
+        print(f"\nTest #{i + 1}:")
+        index = None
+
+        while True:
+            index = np.random.randint(0, X_test.shape[1])
+            if index not in indexes:
+                indexes.append(index)
+                break
+
+        test_prediction(
+            index,
+            W1, b1,
+            W2, b2,
+            W3, b3,
+            X_test
+        )
 
 
 if __name__ == "__main__":
